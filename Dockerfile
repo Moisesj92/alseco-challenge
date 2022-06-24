@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install \
     build-essential \  
     libpq-dev \
     vim \
+    redis-server \ 
     yarn -y
 
 WORKDIR /app

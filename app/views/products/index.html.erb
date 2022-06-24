@@ -4,11 +4,13 @@
 
 <div id="products">
   <% @products.each do |product| %>
-    <%= render product %>
     <p>
-      <%= link_to "Show this product", product %>
+      <%= product.name %> | <%= product.price %> | <%= link_to "Show this product", product %> | comprar
     </p>
   <% end %>
 </div>
 
 <%= link_to "New product", new_product_path %>
+
+<%= link_to "Volver", root_path %>
+

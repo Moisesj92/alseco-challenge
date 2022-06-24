@@ -22,6 +22,17 @@
   </div>
 
   <div>
+    <%= form.label :status, style: "display: block" %>
+    <%= form.select :status, Product.statuses.keys.to_a  %>
+  </div>
+
+  <div>
+    <%= form.label :price, style: "display: block" %>
+    <%= form.number_field :price, in: 1..1000000 %>
+  </div>
+
+
+  <div>
     <%= form.submit %>
   </div>
 <% end %>
