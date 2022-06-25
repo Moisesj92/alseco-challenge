@@ -6,4 +6,10 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "dashboard#welcome"
 
+  get    '/sales/:id', to: 'sales#show', as: 'sale'
+  post   '/sales/', to: 'sales#create'
+  patch  '/sales/:id', to: 'sales#update'
+  delete '/sales/:id', to: 'sales#destroy'
+
+
 end

@@ -14,13 +14,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_24_222443) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "product_transanctions", force: :cascade do |t|
+  create_table "product_sales", force: :cascade do |t|
     t.bigint "product_id", null: false
-    t.bigint "transaction_id", null: false
+    t.bigint "sale_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["product_id"], name: "index_product_transanctions_on_product_id"
-    t.index ["transaction_id"], name: "index_product_transanctions_on_transaction_id"
+    t.index ["product_id"], name: "index_product_sales_on_product_id"
+    t.index ["sale_id"], name: "index_product_sales_on_sale_id"
   end
 
   create_table "products", force: :cascade do |t|
@@ -34,13 +34,13 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_24_222443) do
     t.index ["user_id"], name: "index_products_on_user_id"
   end
 
-  create_table "transactions", force: :cascade do |t|
+  create_table "sales", force: :cascade do |t|
     t.integer "amount"
     t.integer "status", default: 0
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_transactions_on_user_id"
+    t.index ["user_id"], name: "index_sales_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -58,8 +58,8 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_24_222443) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "product_transanctions", "products"
-  add_foreign_key "product_transanctions", "transactions"
+  add_foreign_key "product_sales", "products"
+  add_foreign_key "product_sales", "sales"
   add_foreign_key "products", "users"
-  add_foreign_key "transactions", "users"
+  add_foreign_key "sales", "users"
 end

@@ -3,14 +3,34 @@
 <h1>Products</h1>
 
 <div id="products">
-  <% @products.each do |product| %>
-    <p>
-      <%= product.name %> | <%= product.price %> | <%= link_to "Show this product", product %> | comprar
-    </p>
-  <% end %>
+  <p>
+    <% if current_user.sales.initiated.empty? %>
+      <% @products.each do |product| %>
+        <%= product.name %> | <%= product.price %> | <%= link_to "Show this product", product %> |
+        <%= form_with url: sales_path, method: :post  do |form| %> 
+          <%= form.hidden_field :product_id, value: product.id %>
+          <%= form.submit "Agregar al carro" %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <% @products -= current_user.sales.initiated.first.products %>
+      <% sale = current_user.sales.initiated.first %>
+      <% @products.each do |product| %>
+        <%= product.name %> | <%= product.price %> | <%= link_to "Show this product", product %> |
+        <%= form_with url: "sales/#{sale.id}" , method: :patch  do |form| %> 
+          <%= form.hidden_field :product_id, value: product.id %>
+          <%= form.hidden_field :update_action, value: "add" %>
+          <%= form.submit "Agregar al carrito" %>
+        <% end %>
+      <% end %>
+      <%= link_to "Cart", sale %>
+    <% end %>
+  </p>
+  
+
 </div>
 
-<%= link_to "New product", new_product_path %>
 
-<%= link_to "Volver", root_path %>
+
+<%= link_to "New product", new_product_path %> | <%= link_to "Volver", root_path %>
 
