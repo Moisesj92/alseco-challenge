@@ -1,12 +1,10 @@
 class SalesController < ApplicationController
   before_action :set_sale, only: %i[ show edit update destroy ]
 
-
   def show
     @products = @sale.products
   end
 
-  # debe recibir el producto y usar el usuario logeado
   def create
     product = Product.find(params[:product_id])
     @sale = Sale.new()
@@ -53,10 +51,8 @@ class SalesController < ApplicationController
   end
 
   def destroy
-
     @sale.products.destroy_all
     @sale.destroy
-
     respond_to do |format|
       format.html { redirect_to products_url, notice: "Cart was successfully destroyed." }
       format.json { head :no_content }
