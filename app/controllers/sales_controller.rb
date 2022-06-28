@@ -1,68 +1,51 @@
 class SalesController < ApplicationController
-  before_action :set_sale, only: %i[ show edit update destroy ]
+  before_action :set_sale, only: %i[ show update destroy ]
 
+  # GET /sales
+  def index
+    @sales = Sale.all
+
+    render json: @sales
+  end
+
+  # GET /sales/1
   def show
-    @products = @sale.products
+    render json: @sale
   end
 
+  # POST /sales
   def create
-    product = Product.find(params[:product_id])
-    @sale = Sale.new()
-    @sale.user = current_user
-    @sale.amount = product.price
-    @sale.products << [product]
+    @sale = Sale.new(sale_params)
 
-    respond_to do |format|
-      if @sale.save
-        format.html { redirect_to products_path, notice: "Product was successfully added to cart." }
-        format.json { render :show, status: :created, location: @sale }
-      else
-        format.html { redirect_to products_path, notice: "already have open sale" }
-        format.json { render json: @sale.errors, status: :unprocessable_entity }
-      end
+    if @sale.save
+      render json: @sale, status: :created, location: @sale
+    else
+      render json: @sale.errors, status: :unprocessable_entity
     end
   end
 
+  # PATCH/PUT /sales/1
   def update
-    product = Product.find(params[:product_id])
-    if params[:update_action] == "add"
-      @sale.amount = @sale.amount + product.price
-      @sale.products << [product]
-    elsif params[:update_action] == "remove"
-      @sale.products.delete product
-      @sale.reload
-      @sale.amount = @sale.products.sum(&:price)
+    if @sale.update(sale_params)
+      render json: @sale
+    else
+      render json: @sale.errors, status: :unprocessable_entity
     end
-
-    respond_to do |format|
-      if @sale.save
-        if params[:update_action] == "remove"
-          format.html { redirect_to sale_url(@sale), notice: "cart was successfully updated." }
-        else
-          format.html { redirect_to products_path, notice: "cart was successfully updated." }
-        end
-        format.json { render :show, status: :ok, location: @sale }
-      else
-        format.html { redirect_to products_path, notice: "cart update error" }
-        format.json { render json: @sale.errors, status: :unprocessable_entity }
-      end
-    end
-
   end
 
+  # DELETE /sales/1
   def destroy
-    @sale.products.destroy_all
     @sale.destroy
-    respond_to do |format|
-      format.html { redirect_to products_url, notice: "Cart was successfully destroyed." }
-      format.json { head :no_content }
-    end
   end
 
   private
-  # Use callbacks to share common setup or constraints between actions.
-  def set_sale
-    @sale = Sale.find(params[:id])
-  end
+    # Use callbacks to share common setup or constraints between actions.
+    def set_sale
+      @sale = Sale.find(params[:id])
+    end
 
+    # Only allow a list of trusted parameters through.
+    def sale_params
+      params.require(:sale).permit(:amount, :status, :user_id)
+    end
 end

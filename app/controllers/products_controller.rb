@@ -1,61 +1,41 @@
 class ProductsController < ApplicationController
-  before_action :set_product, only: %i[ show edit update destroy ]
+  before_action :set_product, only: %i[ show update destroy ]
 
-  # GET /products or /products.json
+  # GET /products
   def index
-     @products = policy_scope(Product.all)
+    @products =  policy_scope(Product)
+
+    render json: @products
   end
 
-  # GET /products/1 or /products/1.json
+  # GET /products/1
   def show
+    render json: @product
   end
 
-  # GET /products/new
-  def new
-    @product = Product.new
-  end
-
-  # GET /products/1/edit
-  def edit
-  end
-
-  # POST /products or /products.json
+  # POST /products
   def create
     @product = Product.new(product_params)
-    @product.user = current_user
 
-    respond_to do |format|
-      if @product.save
-        format.html { redirect_to product_url(@product), notice: "Product was successfully created." }
-        format.json { render :show, status: :created, location: @product }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @product.errors, status: :unprocessable_entity }
-      end
+    if @product.save
+      render json: @product, status: :created, location: @product
+    else
+      render json: @product.errors, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /products/1 or /products/1.json
+  # PATCH/PUT /products/1
   def update
-    respond_to do |format|
-      if @product.update(product_params)
-        format.html { redirect_to product_url(@product), notice: "Product was successfully updated." }
-        format.json { render :show, status: :ok, location: @product }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @product.errors, status: :unprocessable_entity }
-      end
+    if @product.update(product_params)
+      render json: @product
+    else
+      render json: @product.errors, status: :unprocessable_entity
     end
   end
 
-  # DELETE /products/1 or /products/1.json
+  # DELETE /products/1
   def destroy
     @product.destroy
-
-    respond_to do |format|
-      format.html { redirect_to products_url, notice: "Product was successfully destroyed." }
-      format.json { head :no_content }
-    end
   end
 
   private
@@ -66,6 +46,6 @@ class ProductsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def product_params
-      params.require(:product).permit(:name, :description, :status, :price)
+      params.require(:product).permit(:name, :description, :sku, :price, :status, :user_id)
     end
 end

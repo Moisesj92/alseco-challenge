@@ -5,41 +5,38 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
-
-
 require 'faker'
 
 p 'Creating users'
-
 User.create(
   first_name: "arsenio",
-  email: "moises.jimenez92@gmail.com",
+  email: "test1@test.com",
   password: "123123123",
-  age: 29,
-  role: "retailer"
+  birthday: Faker::Date.between(from: 40.years.ago, to: Date.today),
+  role: :retailer
+)
+User.create!(
+  first_name: "arsenio",
+  email: "test2@test.com",
+  password: "123123123",
+  birthday: Faker::Date.between(from: 40.years.ago, to: Date.today),
+  role: :supplier
 )
 User.create(
   first_name: "arsenio",
-  email: "moises.jimenez93@gmail.com",
+  email: "test3@test.com",
   password: "123123123",
-  age: 29,
-  role: "supplier"
-)
-User.create(
-  first_name: "arsenio",
-  email: "moises.jimenez94@gmail.com",
-  password: "123123123",
-  age: 29,
-  role: "client"
+  birthday: Faker::Date.between(from: 40.years.ago, to: Date.today),
+  role: :client
 )
 
 50.times do
-  User.create(
+  User.create!(
     first_name: Faker::Name.name,
     email: Faker::Internet.unique.email,
     password: "123123123",
-    age: Faker::Number.between(from: 18, to: 80),
-    role: %w[retailer supplier client].sample
+    birthday: Faker::Date.between(from: 40.years.ago, to: Date.today),
+    role: [0, 1, 2].sample
   )
 end
 
@@ -50,6 +47,7 @@ prices = [15000, 20000, 30000, 42000, 53000]
   Product.create!(
     name: Faker::Lorem.sentence,
     description: Faker::Lorem.paragraph,
+    sku: Faker::Number.number(digits: 10),
     status: [0, 1].sample,
     price: prices.sample,
     user: User.find(owner_ids.sample)

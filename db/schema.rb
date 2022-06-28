@@ -10,9 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_06_25_030549) do
+ActiveRecord::Schema[7.0].define(version: 2022_06_27_201020) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "jwt_deny_lists", force: :cascade do |t|
+    t.string "jti"
+    t.datetime "exp"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["jti"], name: "index_jwt_deny_lists_on_jti"
+  end
 
   create_table "product_sales", force: :cascade do |t|
     t.bigint "product_id", null: false
@@ -26,8 +34,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_25_030549) do
   create_table "products", force: :cascade do |t|
     t.string "name"
     t.text "description"
-    t.integer "status", default: 0
-    t.integer "price", default: 0
+    t.string "sku", null: false
+    t.integer "price"
+    t.integer "status"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -36,7 +45,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_25_030549) do
 
   create_table "sales", force: :cascade do |t|
     t.integer "amount"
-    t.integer "status", default: 0
+    t.integer "status"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -49,12 +58,12 @@ ActiveRecord::Schema[7.0].define(version: 2022_06_25_030549) do
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
+    t.string "first_name", default: ""
+    t.string "last_name", default: ""
+    t.date "birthday"
+    t.integer "role", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "first_name"
-    t.string "last_name"
-    t.integer "age"
-    t.string "role", default: "client"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

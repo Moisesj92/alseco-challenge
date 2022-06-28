@@ -15,6 +15,5 @@ class ProductPolicy < ApplicationPolicy
         products.only_retailer_products.published
       end
     end
-
   end
 end

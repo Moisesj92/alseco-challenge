@@ -6,43 +6,33 @@ class ProductsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get index" do
-    get products_url
-    assert_response :success
-  end
-
-  test "should get new" do
-    get new_product_url
+    get products_url, as: :json
     assert_response :success
   end
 
   test "should create product" do
     assert_difference("Product.count") do
-      post products_url, params: { product: { description: @product.description, name: @product.name, status: @product.status, user_id: @product.user_id } }
+      post products_url, params: { product: { description: @product.description, name: @product.name, price: @product.price, sku: @product.sku, status: @product.status, user_id: @product.user_id } }, as: :json
     end
 
-    assert_redirected_to product_url(Product.last)
+    assert_response :created
   end
 
   test "should show product" do
-    get product_url(@product)
-    assert_response :success
-  end
-
-  test "should get edit" do
-    get edit_product_url(@product)
+    get product_url(@product), as: :json
     assert_response :success
   end
 
   test "should update product" do
-    patch product_url(@product), params: { product: { description: @product.description, name: @product.name, status: @product.status, user_id: @product.user_id } }
-    assert_redirected_to product_url(@product)
+    patch product_url(@product), params: { product: { description: @product.description, name: @product.name, price: @product.price, sku: @product.sku, status: @product.status, user_id: @product.user_id } }, as: :json
+    assert_response :success
   end
 
   test "should destroy product" do
     assert_difference("Product.count", -1) do
-      delete product_url(@product)
+      delete product_url(@product), as: :json
     end
 
-    assert_redirected_to products_url
+    assert_response :no_content
   end
 end
