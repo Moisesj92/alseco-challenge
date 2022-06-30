@@ -7,8 +7,15 @@ class Sale < ApplicationRecord
 
   validate :opened_sale, on: :create
 
+  before_save :calculate_amount
+
   def opened_sale
-    errors.add('already have a sale open') unless user.sales.where(status: :initiated).empty?
+    errors.add(:sale, 'already have a sale open') unless user.sales.where(status: :initiated).empty?
+  end
+
+  def calculate_amount
+    return amount = 0 unless products.present?
+    amount = products.sum(&:price)
   end
 
 end

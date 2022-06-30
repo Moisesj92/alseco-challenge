@@ -1,4 +1,7 @@
 class ProductPolicy < ApplicationPolicy
+
+  #solo puedo actualizar mis propios productos
+
   class Scope
     attr_reader :current_user, :products
     def initialize(current_user, products)

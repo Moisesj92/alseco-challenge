@@ -1,21 +1,30 @@
 class SalesController < ApplicationController
-  before_action :set_sale, only: %i[ show update destroy ]
+  before_action :set_sale, only: %i[ show update destroy add_products remove_products ]
 
   # GET /sales
   def index
-    @sales = Sale.all
+    @sales = policy_scope(Sale)
 
-    render json: @sales
+    render json: @sales, include: [:products] 
   end
 
   # GET /sales/1
   def show
-    render json: @sale
+    render json: @sale, include: [:products] 
   end
 
   # POST /sales
   def create
-    @sale = Sale.new(sale_params)
+    @sale = Sale.new(sale_params.except(:products))
+
+    if sale_params[:products]
+      sale_params[:products].each do |product|
+        current_product = Product.find(product[:id])
+        @sale.products << current_product
+      end
+    end
+
+    @sale.amount = @sale.calculate_amount
 
     if @sale.save
       render json: @sale, status: :created, location: @sale
@@ -26,7 +35,7 @@ class SalesController < ApplicationController
 
   # PATCH/PUT /sales/1
   def update
-    if @sale.update(sale_params)
+    if @sale.update(update_sale_params)
       render json: @sale
     else
       render json: @sale.errors, status: :unprocessable_entity
@@ -35,7 +44,39 @@ class SalesController < ApplicationController
 
   # DELETE /sales/1
   def destroy
+    @sale.product_sale.destroy_all
     @sale.destroy
+  end
+
+  def add_products
+    sale_params[:products].each do |product|
+      current_product = Product.find(product[:id])
+      @sale.products << current_product
+    end
+
+    @sale.amount = @sale.calculate_amount
+
+    if @sale.save
+      render json: @sale, include: [:products], status: :ok, location: @sale
+    else
+      render json: @sale.errors, status: :unprocessable_entity
+    end
+
+  end
+
+  def remove_products
+    sale_params[:products].each do |product|
+      current_product = Product.find(product[:id])
+      @sale.products.delete current_product
+    end
+
+    @sale.amount = @sale.calculate_amount
+
+    if @sale.save
+      render json: @sale, include: [:products], status: :ok, location: @sale
+    else
+      render json: @sale.errors, status: :unprocessable_entity
+    end
   end
 
   private
@@ -46,6 +87,15 @@ class SalesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def sale_params
-      params.require(:sale).permit(:amount, :status, :user_id)
+      params.require(:sale).permit(:amount, :status, :user_id, products: product_params)
     end
+
+    def update_sale_params
+      params.require(:sale).permit(:status)
+    end
+
+    def product_params
+      [:id]
+    end
+
 end

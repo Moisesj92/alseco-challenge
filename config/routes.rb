@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
-  resources :sales
+  resources :sales do
+    member do
+      put :add_products
+      put :remove_products
+    end
+  end
   resources :products
 
   devise_for :users,
