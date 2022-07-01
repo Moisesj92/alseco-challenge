@@ -39,6 +39,12 @@ class ProductsController < ApplicationController
     @product.destroy
   end
 
+  def my_products
+    @products =  Product.where(user: current_user)
+
+    render json: @products
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_product

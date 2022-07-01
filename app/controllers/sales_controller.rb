@@ -81,10 +81,33 @@ class SalesController < ApplicationController
   end
 
   def by_user
-    sales = User.find(params[:user_id]).sales.where(status: 4).created_between(params[:start_date], params[:end_date])
-    total = sales.sum(&:amount)
-    response = { sales: sales, total_amount: total }
+    total_user_products_sales = 0
+    user_products = User.find(params[:user_id]).products
+    user_products.each do |product|
+      sales_product_count = product.sales.complete.created_between(params[:start_date], params[:end_date]).count
+      total_products_sales += sales_product_count * product.price
+    end
 
+    response = { total_amount: total_user_products_sales }
+    render json: response, status: :ok
+  end
+
+  def average_age_buyers
+    buyer_ages = []
+    user_products = User.find(params[:user_id]).products
+
+    user_products.each do |product|
+      completed_sales = product.sales.complete
+      if completed_sales.count >= 2
+        completed_sales.each do |sale|
+          #TODO si es el mismo comprador se cuenta 2 veces
+          age = ((Time.zone.now - sale.user.birthday.to_time) / 1.year.seconds).floor
+          buyer_ages << age
+        end
+      end
+    end
+
+    response = { buyers_average_age:  buyer_ages.sum(0.0) / buyer_ages.size }
     render json: response, status: :ok
   end
 

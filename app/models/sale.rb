@@ -6,6 +6,8 @@ class Sale < ApplicationRecord
   enum status: { initiated: 0, paid: 1, rejected_payment: 2, routed: 3, complete: 4, canceled: 5 }
 
   validate :opened_sale, on: :create
+  #TODO cant buy owner products
+  #TODO cant buy products with 0 stock
 
   before_save :calculate_amount
 

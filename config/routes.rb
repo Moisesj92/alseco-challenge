@@ -6,10 +6,15 @@ Rails.application.routes.draw do
     end
     collection do
       post :by_user
+      post :average_age_buyers
     end
   end
 
-  resources :products
+  resources :products do
+    collection do
+      get :my_products
+    end
+  end
 
   namespace :users do
     get ':id/sales', :to => "users#sales"
