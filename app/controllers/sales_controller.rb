@@ -16,6 +16,7 @@ class SalesController < ApplicationController
   # POST /sales
   def create
     @sale = Sale.new(sale_params.except(:products))
+    @sale.user = current_user
 
     if sale_params[:products]
       sale_params[:products].each do |product|
@@ -79,6 +80,14 @@ class SalesController < ApplicationController
     end
   end
 
+  def by_user
+    sales = User.find(params[:user_id]).sales.where(status: 4).created_between(params[:start_date], params[:end_date])
+    total = sales.sum(&:amount)
+    response = { sales: sales, total_amount: total }
+
+    render json: response, status: :ok
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_sale
@@ -87,7 +96,7 @@ class SalesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def sale_params
-      params.require(:sale).permit(:amount, :status, :user_id, products: product_params)
+      params.require(:sale).permit(:amount, :status, products: product_params)
     end
 
     def update_sale_params

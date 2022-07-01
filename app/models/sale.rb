@@ -9,6 +9,8 @@ class Sale < ApplicationRecord
 
   before_save :calculate_amount
 
+  scope :created_between, lambda { |start_date, end_date| where(created_at: start_date..end_date) }
+
   def opened_sale
     errors.add(:sale, 'already have a sale open') unless user.sales.where(status: :initiated).empty?
   end

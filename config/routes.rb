@@ -4,8 +4,16 @@ Rails.application.routes.draw do
       put :add_products
       put :remove_products
     end
+    collection do
+      post :by_user
+    end
   end
+
   resources :products
+
+  namespace :users do
+    get ':id/sales', :to => "users#sales"
+  end 
 
   devise_for :users,
   controllers: {
@@ -13,8 +21,4 @@ Rails.application.routes.draw do
       registrations: 'users/registrations'
   }
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
-
-  # Defines the root path route ("/")
-  # root "articles#index"
 end
